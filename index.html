@@ -127,19 +127,20 @@
         /* Custom Cursor */
         .cursor {
             position: fixed;
-            width: 20px;
-            height: 20px;
-            background-color: #ff6f61;
+            width: 25px;
+            height: 25px;
+            background-color: rgba(255, 51, 51, 0.8);
             border-radius: 50%;
             pointer-events: none;
-            mix-blend-mode: difference;
-            transition: width 0.2s, height 0.2s;
+            mix-blend-mode: normal;
+            transition: transform 0.1s ease-out, width 0.1s, height 0.1s, background-color 0.3s;
             z-index: 9999;
+            box-shadow: 0 0 10px rgba(255, 51, 51, 0.8);
         }
 
         .cursor.grow {
-            width: 40px;
-            height: 40px;
+            transform: scale(1.5);
+            background-color: rgba(255, 0, 0, 1);
         }
 
         /* Pop-up Window */
@@ -218,26 +219,6 @@
             z-index: 2000;
             overflow: auto;
         }
-        
-        /* Custom Cursor */
-    .cursor {
-    position: fixed;
-    width: 25px;
-    height: 25px;
-    background-color: rgba(255, 51, 51, 0.8);
-    border-radius: 50%;
-    pointer-events: none;
-    mix-blend-mode: normal;
-    transition: transform 0.1s ease-out, width 0.1s, height 0.1s, background-color 0.3s;
-    z-index: 9999;
-    box-shadow: 0 0 10px rgba(255, 51, 51, 0.8);
-}
-
-/* Cursor grows when interacting */
-.cursor.grow {
-    transform: scale(1.5);
-    background-color: rgba(255, 0, 0, 1);
-}
 
         .big-note {
             font-size: 2rem;
@@ -265,9 +246,9 @@
 
         <!-- Gallery -->
         <div class="gallery">
-            <img src="photo4.jpg" alt="Photo 1" class="gallery-img">
-            <img src="photo2.jpg" alt="Photo 2" class="gallery-img">
-            <img src="photo3.jpg" alt="Photo 3" class="gallery-img">
+            <img src="photo/photo4.jpg" alt="Photo 1" class="gallery-img">
+            <img src="photo/photo2.jpg" alt="Photo 2" class="gallery-img">
+            <img src="photo/photo3.jpg" alt="Photo 3" class="gallery-img">
         </div>
 
         <!-- Love Letter -->
@@ -290,8 +271,14 @@
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
 
-    <!-- Pop-up Window -->
-    <div id="popup" class="popup">
+    <!-- Pop-up Window (Wait...) -->
+    <div id="waitPopup" class="popup">
+        <p>Hehee... 🥹👉🏻👈🏻 <br>
+            Wait....</p>
+    </div>
+
+    <!-- Pop-up Window (Aur bhi kuch hai dekhegi?) -->
+    <div id="mainPopup" class="popup">
         <p>Aur bhi kuch hai dekhegi?</p>
         <div class="popup-buttons">
             <button id="yesButton">Yes</button>
@@ -326,13 +313,13 @@
     </div>
 
     <!-- Audio for Background Music -->
-    <audio id="firstSong" loop>
-        <source src="muskurane_ki_wajah.mp3" type="audio/mpeg">
+    <audio id="magicSong">
+        <source src="photo/song/dailouge.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
-    <audio id="secondSong" loop>
-        <source src="haan_k_haan.mp3" type="audio/mpeg">
+    <audio id="secondSong">
+        <source src="photo/song/haan_k_haan.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
@@ -347,32 +334,27 @@
             tulip.style.animationDuration = Math.random() * 5 + 5 + 's';
             tulipContainer.appendChild(tulip);
         }
-            // Custom Cursor Logic
-const cursor = document.getElementById('cursor');
 
-document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-});
+        // Custom Cursor Logic
+        const cursor = document.getElementById('cursor');
 
-// Cursor grows when clicking
-document.addEventListener('mousedown', () => {
-    cursor.classList.add('grow');
-});
-
-document.addEventListener('mouseup', () => {
-    cursor.classList.remove('grow');
-});
-        // Audio Elements
-        const firstSong = document.getElementById('firstSong');
-        const secondSong = document.getElementById('secondSong');
-
-        // Autoplay the first song when the page loads
-        window.addEventListener('load', function() {
-            firstSong.play().catch(error => {
-                console.log('Autoplay prevented:', error);
-            });
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
         });
+
+        // Cursor grows when clicking
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('grow');
+        });
+
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('grow');
+        });
+
+        // Audio Elements
+        const magicSong = document.getElementById('magicSong');
+        const secondSong = document.getElementById('secondSong');
 
         // Heart Button Click Event
         document.getElementById('heartButton').addEventListener('click', function() {
@@ -393,14 +375,22 @@ document.addEventListener('mouseup', () => {
                 }, i * 100);
             }
 
-            // Show pop-up after 3 seconds
-            setTimeout(() => {
-                document.getElementById('popup').style.display = 'block';
-            }, 3000);
+            // Show "Wait...." pop-up
+            const waitPopup = document.getElementById('waitPopup');
+            waitPopup.style.display = 'block';
+
+            // Play the magic song
+            magicSong.play();
+
+            // When the song ends, show the next pop-up
+            magicSong.addEventListener('ended', function() {
+                waitPopup.style.display = 'none';
+                document.getElementById('mainPopup').style.display = 'block';
+            });
         });
 
         // Pop-up and New Page Functionality
-        const popup = document.getElementById('popup');
+        const mainPopup = document.getElementById('mainPopup');
         const newPage = document.getElementById('newPage');
         const yesButton = document.getElementById('yesButton');
         const noButton = document.getElementById('noButton');
@@ -416,17 +406,16 @@ document.addEventListener('mouseup', () => {
         yesButton.addEventListener('click', function() {
             yesButtonSize = 1;
             yesButton.style.transform = 'scale(1)';
-            popup.style.display = 'none';
+            mainPopup.style.display = 'none';
             newPage.style.display = 'block';
 
-            // Pause the first song and play the second song
-            firstSong.pause();
+            // Play the second song when the new page appears
             secondSong.play();
         });
 
         // Pause music when closing/refreshing page
         window.addEventListener('beforeunload', function() {
-            firstSong.pause();
+            magicSong.pause();
             secondSong.pause();
         });
     </script>
